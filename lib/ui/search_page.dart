@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:random_episode/models/episode_model.dart';
 import 'package:random_episode/models/tv_show_model.dart';
@@ -82,6 +84,17 @@ class _SearchPageState extends State<SearchPage> {
     summary = summary.replaceAll(RegExp("<[^>]*>"), "");
     summary = summary.length > 200 ? summary.substring(0, 200) : summary;
     return ListTile(
+      onTap: () async {
+        getTvShowSeasonsList(show.id ?? 1).then((value) {
+          var decodedData = jsonEncode(show.toJson());
+          var snackBar = SnackBar(
+            content: Text('You have picked ${show.name ?? ""}'),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+          Navigator.pop(context, [decodedData, value]); //Pop and send the data to parent.
+        });
+      },
       contentPadding: const EdgeInsets.only(left: 1.0, right: 1.0),
       leading: image,
       title: Text(show.name ?? ""),
