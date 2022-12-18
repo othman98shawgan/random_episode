@@ -1,11 +1,15 @@
 class Image {
-  String? medium;
-  String? original;
+  final String medium;
+  final String original;
 
-  Image({this.medium, this.original});
+  Image({required this.medium, required this.original});
 
-  Image.fromJson(Map<String, dynamic> json) {
-    medium = json['medium'];
-    original = json['original'];
-  }
+  Image.fromJson(Map<String, dynamic> json)
+      : medium = json['medium'],
+        original = json['original'];
+
+  Map<String, dynamic> toJson() => {
+        'medium': medium,
+        'original': original,
+      };
 }

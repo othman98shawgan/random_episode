@@ -90,3 +90,19 @@ Future<List<Episode>> getSeasonEpisodes(int seasonId) async {
   var statusCode = response.statusCode;
   throw Exception('Failed to get Tv shows. Status code = $statusCode');
 }
+
+Future<int> getSeasonEpisodesNumber(int seasonId) async {
+  var url = Uri.parse("$baseUrl/seasons/$seasonId/episodes");
+  var response = await http.get(url);
+
+  if (response.statusCode == 200) {
+    var episodesData = convert.jsonDecode(response.body);
+    var numberOfEpisodes = episodesData.length;
+
+    return numberOfEpisodes;
+  }
+
+  // If the server did not return a 200 CREATED response,
+  var statusCode = response.statusCode;
+  throw Exception('Failed to get Tv shows. Status code = $statusCode');
+}
