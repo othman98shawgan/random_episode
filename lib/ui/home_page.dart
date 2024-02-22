@@ -25,6 +25,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var pickedShowData = TvShow();
   var pickedShowSeasons = List<Season>.empty();
   var pickedEpisode = [0, 0];
+  var pickedEp = Episode();
 
   @override
   Widget build(BuildContext context) {
@@ -33,18 +34,9 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
         actions: [
           IconButton(
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SearchPage(
-                      title: 'Search Page',
-                      searchValue: 'the big bang theory',
-                    ),
-                  ));
-            },
-            icon: const Icon(Icons.search),
-            tooltip: 'Search',
+            onPressed: () {},
+            icon: const Icon(Icons.star),
+            tooltip: 'Starred',
           ),
         ],
       ),
@@ -115,11 +107,52 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               'Season: ${pickedEpisode[0]} - Episode: ${pickedEpisode[1]}',
               style: const TextStyle(fontSize: 24),
-            )
+            ),
+            _pickedEpisode(),
           ],
         ),
       ),
     );
+  }
+
+  Widget _pickedEpisode() {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    if (pickedEp.id == null) {
+      return const Center();
+    }
+    var image = SizedBox(
+      width: screenWidth * 0.35,
+      child: Image(
+        image: NetworkImage(pickedEp.image?.original ??
+            'https://upload.wikimedia.org/wikipedia/commons/3/38/Solid_white_bordered.png'),
+        height: screenHeight * 0.1,
+      ),
+    );
+
+    return Card(
+        child: Padding(
+      padding: const EdgeInsets.all(8),
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            SizedBox(
+              width: screenWidth * 0.45,
+              child: Column(
+                children: [
+                  Text(pickedEp.name.toString()),
+                  Text(
+                    'Season: ${pickedEp.season.toString()} - Episode: ${pickedEp.number.toString()}',
+                    // style: const TextStyle(fontSize: 24),
+                  ),
+                ],
+              ),
+            ),
+            image,
+          ]),
+    ));
   }
 
   Widget _buildRow(TvShow show) {
@@ -146,6 +179,11 @@ class _MyHomePageState extends State<MyHomePage> {
       var episodeRange = await getSeasonEpisodesNumber(seasons[randomSeason].id ?? 0);
       randomEpisode = random.nextInt(episodeRange);
     }
+    await getEpisode(pickedShowData.id ?? 0, randomEpisode + 1, randomSeason + 1).then((value) {
+      setState(() {
+        pickedEp = value;
+      });
+    });
 
     return [randomSeason + 1, randomEpisode + 1];
   }
